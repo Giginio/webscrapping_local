@@ -1,0 +1,12 @@
+# Ignore all CSV files
+*.csv
+
+# Ignore specific directories
+logs/
+temp/
+
+# Ignore all pkl files
+*.pkl
+
+# Ignore a specific file
+config/settings.txt
