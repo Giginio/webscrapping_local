@@ -1,6 +1,7 @@
 ### new cersion with css selector?
 
 import pandas as pd
+import os
 import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -19,7 +20,7 @@ ua_list[:10]
 import random
 # specify path of Chromedriver Location:
 #chromedriver_path = r"C:\Users\Pierluigi\Documents\GitHub\chromedriver-win64\chromedriver.exe"
-chromedriver_path = r"C:\Users\gigim\Documents\GitHub\chromedriver-win64\chromedriver.exe"
+chromedriver_path = r"C:\Users\Pierluigi\Documents\GitHub\chromedriver-win64\chromedriver.exe"
 
 
 
@@ -44,7 +45,7 @@ def get_html(url):
 
     return source
 
-def read_and_increment_number(file_path="jo24_number.txt"):
+def read_and_increment_number(file_path="job24_number.txt"):
     """
     Reads an integer from a file, increments it by 1, and writes it back.
     Returns the original number before incrementing.
@@ -68,7 +69,7 @@ def read_and_increment_number(file_path="jo24_number.txt"):
 
 
 bank = 'Raiffeisen'
-page_list = list(range(1, 2))
+page_list = list(range(1, 101))
 
 # Initialize an empty list to store job data across all pages
 job_data = []
@@ -138,11 +139,12 @@ drive_path = "Z:/"
 # Check if the directory exists
 if os.path.exists(drive_path):
     print(f"The network drive {drive_path} is accessible.")
+    df.to_pickle(f"Z:/job_data_job24_{x}.pkl")
 else:
     print(f"The network drive {drive_path} is NOT accessible.")
     df.to_pickle(f"C:/Users/Pierluigi/Documents/GitHub/jobScanBackup/job_data_job24_{x}.pkl")
 
 
-df.to_pickle(f"job_data_job24_{x}.pkl")
+
 # Display the DataFrame
 print(df)
