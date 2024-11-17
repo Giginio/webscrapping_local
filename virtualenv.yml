@@ -1,0 +1,25 @@
+name: mscenv
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.11.5
+  - pip
+  - numpy
+  - pandas
+  - seaborn
+  - plotly
+  - contextily
+  - prettytable
+  - openpyxl=3.1.2
+  - selenium=4.17.2
+  - webdriver-manager=4.0.1
+  - requests=2.31.0
+  - jupyter=1.0.0
+
+  - pip:
+      - mysql-connector-python
+      - beautifulsoup4
+      - openrouteservice
+      - xlwt
+      - transformers
