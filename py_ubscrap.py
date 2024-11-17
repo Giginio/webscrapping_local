@@ -9,6 +9,8 @@ import pandas as pd
 from bs4 import BeautifulSoup
 
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -19,15 +21,16 @@ import time
 import datetime
 
 # specify path of Chromedriver Location:
-chromedriver_path = r"C:\Users\gigim\Documents\GitHub\chromedriver-win64\chromedriver.exe"
+#chromedriver_path = r"C:\Users\gigim\Documents\GitHub\chromedriver-win64\chromedriver.exe"
+chromedriver_path = r"C:\Users\Pierluigi\Documents\GitHub\chromedriver-win64\chromedriver.exe"
 
 # Set options for Chrome-Driver (headless mode)
 # opts = Options()
 # opts.add_argument("--headless")
 # opts.add_argument("user-agent=" + random.choice(ua_list))
 
-#service = Service(executable_path=chromedriver_path) 
-driver = webdriver.Chrome() #service=service, options=opts
+service = Service(executable_path=chromedriver_path) 
+driver = webdriver.Chrome(service=service) #service=service, options=opts
 
 # Liste mit User-Agents für Rotation
 ua_path = "user_agents.txt"
@@ -39,7 +42,7 @@ ua_list[:5]
 # Get the current date (year, month, and day only)
 current_date = datetime.datetime.now().date()
 # Initialize WebDriver
-driver = webdriver.Chrome()  # Ensure chromedriver is in PATH or provide the full path
+# redundant; driver = webdriver.Chrome()  # Ensure chromedriver is in PATH or provide the full path
 url = "https://jobs.ubs.com/TGNewUI/Search/Home/Home?partnerid=25008&siteid=5155#home"
 driver.get(url)
 
@@ -153,4 +156,16 @@ def read_and_increment_number(file_path="ubs_number.txt"):
     return current_number  # Return the number before incrementing
 
 x = read_and_increment_number()
-df.to_pickle(f"job_data_ubs_{x}.pkl")
+
+# Check if the mapped network drive is accessible
+drive_path = "Z:/"
+
+# Check if the directory exists
+if os.path.exists(drive_path):
+    print(f"The network drive {drive_path} is accessible.")
+else:
+    print(f"The network drive {drive_path} is NOT accessible.")
+    df.to_pickle(f"C:/Users/Pierluigi/Documents/GitHub/jobScanBackup/job_data_ubs_{x}.pkl")
+
+
+df.to_pickle(f"Z:/job_data_ubs_{x}.pkl")

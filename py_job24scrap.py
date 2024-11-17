@@ -47,7 +47,7 @@ def get_html(url):
 
     return source
 
-def read_and_increment_number(file_path="ubs_number.txt"):
+def read_and_increment_number(file_path="jo24_number.txt"):
     """
     Reads an integer from a file, increments it by 1, and writes it back.
     Returns the original number before incrementing.
@@ -135,6 +135,17 @@ df = pd.DataFrame(job_data)
 
 # Convert the df to pkl file
 x = read_and_increment_number()
+
+drive_path = "Z:/"
+
+# Check if the directory exists
+if os.path.exists(drive_path):
+    print(f"The network drive {drive_path} is accessible.")
+else:
+    print(f"The network drive {drive_path} is NOT accessible.")
+    df.to_pickle(f"C:/Users/Pierluigi/Documents/GitHub/jobScanBackup/job_data_job24_{x}.pkl")
+
+
 df.to_pickle(f"job_data_job24_{x}.pkl")
 # Display the DataFrame
 print(df)
