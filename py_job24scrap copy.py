@@ -25,8 +25,11 @@ chromedriver_path = r"C:\Users\gigim\Documents\GitHub\chromedriver-win64\chromed
 
 # Function to get the HTML content of a page and check if it's valid
 def get_html(url):
+    opts = Options()
+    opts.add_argument("--headless")
+    opts.add_argument("user-agent=" + random.choice(ua_list))
     service = Service(executable_path=chromedriver_path)
-    driver = webdriver.Chrome(service=service)
+    driver = webdriver.Chrome(service=service, options=opts)
     
     try:
         # Load the page
