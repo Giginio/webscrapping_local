@@ -1,4 +1,3 @@
-
 # Libraries
 import time
 import pytesseract
@@ -57,7 +56,7 @@ def remove_duplicates(prev_text, new_text):
 def screencapture(link):
     """ Captures job description by scrolling and using OCR. """
     driver.get(link)
-    time.sleep(3)  # Allow JavaScript to load
+    time.sleep(5)  # Increased wait time to ensure full page load
 
     scroll_height = 500  # Smaller scroll step to avoid skipping content
     full_text = ""
@@ -106,8 +105,9 @@ def screencapture(link):
         print(f"Could not extract job title for {link}: {e}")
         job_title = None  
 
+    print(f"✅ Processed: {link}")
     print(f"Job Title: {job_title}")
-    print(f"Extracted Text for {link}:\n{full_text[:500]}...\n")
+    print(f"Extracted Text Preview:\n{full_text[:500]}...\n")
 
     return full_text, job_title
 
@@ -131,45 +131,45 @@ print("Search initiated for 'Switzerland'.")
 time.sleep(5)
 
 # Step 3: Scroll and interact with "Show More Jobs" button
+scroll_start_time = time.time()
+scroll_duration = 5  
+
+while time.time() - scroll_start_time < scroll_duration:
+    driver.execute_script("window.scrollBy(0, 2000);")  
+    time.sleep(0.5)  
+
+print("Finished scrolling.")
+
 try:
-    while len(job_links) < 5:  # Limit job links for testing
-        try:
-            scroll_start_time = time.time()
-            scroll_duration = 5  
+    show_more_button = driver.find_element(By.XPATH, '//*[@id="showMoreJobs"]')
+    actions = ActionChains(driver)
+    actions.move_to_element(show_more_button).click().perform()
+    print("Clicked 'Show More Jobs' button.")
+    time.sleep(8)  
+except Exception as e:
+    print("No more 'Show More Jobs' buttons or error:", e)
 
-            while time.time() - scroll_start_time < scroll_duration:
-                driver.execute_script("window.scrollBy(0, 2000);")  
-                time.sleep(0.5)  
+# Step 4: Extract job links
+job_elements = driver.find_elements(By.CSS_SELECTOR, "a.jobtitle")
+print(f"🔎 Found {len(job_elements)} job links.")
 
-            print("Finished scrolling.")
+for job in job_elements:
+    link = job.get_attribute("href")
+    if link and link not in job_links:
+        job_links.append(link)
 
-            show_more_button = driver.find_element(By.XPATH, '//*[@id="showMoreJobs"]')
-            actions = ActionChains(driver)
-            actions.move_to_element(show_more_button).click().perform()
-            print("Clicked 'Show More Jobs' button.")
-            time.sleep(8)  
+# Ensure all links are processed
+print(f"Total links collected: {len(job_links)}")
 
-        except Exception as e:
-            print("No more 'Show More Jobs' buttons or error:", e)
-            break
+# Step 5: Open each job link and extract visible job descriptions
+for index, link in enumerate(job_links):
+    print(f"Processing {index + 1}/{len(job_links)}: {link}")
+    job_text, job_title = screencapture(link)
+    job_htmls.append(job_text)
+    job_titles.append(job_title)
 
-    # Step 4: Extract job links (limit to 5 jobs)
-    job_elements = driver.find_elements(By.CSS_SELECTOR, "a.jobtitle")  
-    for job in job_elements:
-        link = job.get_attribute("href")
-        if link and link not in job_links:
-            job_links.append(link)
-        if len(job_links) >= 5:  # Stop after collecting 5 links
-            break
-
-    # Step 5: Open each job link and extract visible job descriptions
-    for link in job_links:
-        job_text, job_title = screencapture(link)
-        job_htmls.append(job_text)
-        job_titles.append(job_title)
-
-finally:
-    driver.quit()  
+# Close browser
+driver.quit()
 
 # Step 6: Store data in a DataFrame
 df = pd.DataFrame({
@@ -183,41 +183,4 @@ df = pd.DataFrame({
 output_path = "ubs_jobs_test_data.csv"
 df.to_csv(output_path, index=False)
 
-print("UBS Test complete! 5 job records have been scraped and saved.")
-
-def read_and_increment_number(file_path="ubs_number.txt"):
-    """
-    Reads an integer from a file, increments it by 1, and writes it back.
-    Returns the original number before incrementing.
-    """
-    try:
-        # Step 1: Read the current number from the file
-        with open(file_path, "r") as file:
-            current_number = int(file.read().strip())
-    except FileNotFoundError:
-        # If the file doesn't exist, initialize with 1
-        current_number = 1
-
-    # Step 2: Increment the number
-    next_number = current_number + 1
-
-    # Step 3: Write the incremented number back to the file
-    with open(file_path, "w") as file:
-        file.write(str(next_number))
-
-    return current_number  # Return the number before incrementing
-
-x = read_and_increment_number()
-
-# Check if the mapped network drive is accessible
-drive_path = "Z:/"
-
-# Check if the directory exists
-if os.path.exists(drive_path):
-    print(f"The network drive {drive_path} is accessible.")
-else:
-    print(f"The network drive {drive_path} is NOT accessible.")
-    df.to_pickle(f"C:/Users/Pierluigi/Documents/GitHub/jobScanBackup/job_data_ubs_{x}.pkl")
-
-
-df.to_pickle(f"Z:/job_data_ubs_{x}.pkl")
+print(" UBS Test complete! All job records have been scraped and saved.")
